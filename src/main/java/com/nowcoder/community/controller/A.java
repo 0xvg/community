@@ -1,14 +1,17 @@
 package com.nowcoder.community.controller;
 
 import com.nowcoder.community.service.AlphaService;
+import com.nowcoder.community.util.CommunityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
@@ -134,5 +137,63 @@ public class A {
             list.add(emp);
 
             return list;
+        }
+
+    //cookie示例
+        @RequestMapping(path = "/cookie/set",method = RequestMethod.GET)
+        @ResponseBody
+        public String setCookie(HttpServletResponse response){
+            //创建cookie
+            Cookie cookie=new Cookie("code", CommunityUtil.generateUUID());
+            //cookie生效范围
+            cookie.setPath("/community/a");
+            //cookie生存时间
+            cookie.setMaxAge(60*10);
+            //发送cookie
+            response.addCookie(cookie);
+            return "set cookie";
+        }
+
+        @RequestMapping(path = "/cookie/get",method = RequestMethod.GET)
+        @ResponseBody
+        public String getCookie(@CookieValue("code") String code){
+            System.out.println(code);
+            return "get nima";
+        }
+
+        //cookie只能存字符串，session什么都行
+        //session存放更加安全，但是增加内存压力。cookie保存小。
+    //项目提问：
+        /**
+         *多服务器时，session会有问题，分布式储存，负载均衡。粘性session不完美，浏览器访问多个服务器时，按照最优先访问，
+         * 并不是每次同一访问会是同一个服务器。
+         * 解决：1.同步session，浏览器访问后，不论哪个服务器都同步给所有服务器。但是会影响性能，不理想。
+         *      2.共享session，单独列一个服务器，专门存session，浏览器访问时，服务器向这个服务器申请session。
+         *但是非常危险，单体服务器，如果这个服务器出现问题，那全部会出现问题
+         *      3.把一些数据，能存在cookie里就放在cookie里。一些敏感数据，可以存放在数据库里（可以做集群备份），
+         *服务器访问数据库来得到session。但是也会有一些问题，最好放在Redis里（nosql）
+         */
+
+
+    //session示例
+
+        @RequestMapping(path = "/session/set",method = RequestMethod.GET)
+        @ResponseBody
+        public String setSession(HttpSession session){
+            session.setAttribute("id",1);
+            session.setAttribute("time","Test");
+            return "set seses";
+        }
+
+        @RequestMapping(path = "/session/get",method = RequestMethod.GET)
+        @ResponseBody
+        public String getSession(HttpSession session){
+            System.out.println(session.getAttribute("id"));
+            System.out.println(session.getAttribute("time"));
+            return "get";
+        }
+
+         public static void main(String[] args) {
+            System.out.println(1);
         }
 }

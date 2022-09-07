@@ -18,6 +18,9 @@ import java.util.List;
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
 public class MapperTests {
+  /*  @Autowired
+    private LoginTicketMapper loginTicketMapper;*/
+
     @Autowired
     private UserMapper userMapper;
 
@@ -69,4 +72,14 @@ public class MapperTests {
         System.out.println(rows);
     }
 
+/*    @Test
+    public void textInsertLoginTicket(){
+        LoginTicket loginTicket=new LoginTicket();
+        loginTicket.setUserId(101);
+        loginTicket.setTicket("acb");
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+1000*60*10));
+
+        loginTicketMapper.insertLoginTicket(loginTicket);
+    }*/
 }
